@@ -40,7 +40,9 @@ namespace StockBuyer.Data.Services
                     {
                         StockId = stock.Id,
                         StockName = stock.Name,
-                        StockDescription = stock.Description
+                        StockDescription = stock.Description,
+                        Price = stock.CurrentPrice
+                        
                     });
                 }
             }

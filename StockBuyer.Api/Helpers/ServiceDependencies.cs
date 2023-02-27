@@ -7,12 +7,11 @@ namespace StockBuyer.Api.Helpers
     {
         public static void AddServiceDependencies(this IServiceCollection services)
         {
+            services.AddSingleton<IUserEntityRepository, UserEntityRepository>();
+            services.AddSingleton<IPasswordHasher, PasswordHasher>();
+            services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IStockEntityRepository, StockEntityRepository>();
             services.AddSingleton<IStocksDataService, StocksDataService>();
-            services.AddScoped<IPasswordHasher, PasswordHasher>(); 
-            services.AddScoped<IUserEntityRepository, UserEntityRepository>();
-            services.AddScoped<IUserService, UserService>();
-
         }
     }
 }

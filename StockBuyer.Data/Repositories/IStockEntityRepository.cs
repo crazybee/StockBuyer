@@ -4,8 +4,8 @@ namespace StockBuyer.Data.Repositories
 {
     public interface IStockEntityRepository
     {
-        Task<IEnumerable<ItemEntity>> GetAllEntities();
+        Task<IEnumerable<StockEntity>> GetAllEntities();
 
-        Task<ItemEntity?> GetEntityById(Guid id);
+        Task<StockEntity?> GetEntityById(Guid id);
     }
 }

@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using StockBuyer.Data.Helpers;
+﻿using StockBuyer.Data.Helpers;
 using StockBuyer.Data.Models;
 using StockBuyer.Data.Repositories;
 
@@ -8,12 +7,10 @@ namespace StockBuyer.Data.Services
     public class UserService : IUserService
     {
         private readonly IUserEntityRepository userRepository;
-        private readonly IMemoryCache memoryCache;
         private readonly IPasswordHasher passwordHasher;
-        public UserService(IUserEntityRepository userRepository, IMemoryCache memoryCache, IPasswordHasher passwordHasher)
+        public UserService(IUserEntityRepository userRepository, IPasswordHasher passwordHasher)
         {
             this.userRepository = userRepository;
-            this.memoryCache = memoryCache;
             this.passwordHasher = passwordHasher;
         }
 
@@ -58,22 +55,10 @@ namespace StockBuyer.Data.Services
         {
             var foundUser = await userRepository.GetUserByName(userName);
 
-            return foundUser == null ? null : new User() { Name = foundUser.Name, Id = foundUser.Id};
+            return foundUser == null ? null : new User() { Name = foundUser.Name, Id = foundUser.Id, TotalMoney = foundUser.TotalCash};
         }
 
-        public async Task<User?> GetUserByNameFromCache(string userName)
-        {
-            User? userOutput;
-            userOutput = memoryCache.Get<User>(userName);
-            if (userOutput == null)
-            {
-                userOutput = await this.GetUserByName(userName);
-                this.memoryCache.Set(userName, userOutput, TimeSpan.FromMinutes(60));
-            }
-
-            return userOutput;
-        }
-
+    
         public async Task<bool> IsUserValid(string userName, string password)
         {
             var foundUser = await this.userRepository.GetUserByName(userName);

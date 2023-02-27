@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using StockBuyer.Data.Models;
 using StockBuyer.Data.Services;
 
@@ -7,14 +6,16 @@ namespace StockBuyer.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthenticationController : BaseController
+    public class AuthenticationController : ControllerBase
     {
-        protected AuthenticationController(IUserService userService) : base(userService)
+        private readonly IUserService userService;
+        public AuthenticationController(IUserService userService) 
         {
+            this.userService = userService;
         }
 
         [HttpPost("authenticate")]
-        public async Task<ActionResult> Authenticate(AuthenticationRequest request)
+        public async Task<ActionResult<AuthenticationResponse>> Authenticate(AuthenticationRequest request)
         {
             var response = await this.userService.Authenticate(request);
 

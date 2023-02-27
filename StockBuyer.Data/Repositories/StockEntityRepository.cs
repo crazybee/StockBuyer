@@ -12,25 +12,25 @@ namespace StockBuyer.Data.Repositories
                 "Amazon"
             };
 
-        private readonly List<ItemEntity> MockedItemList = GenerateMockedItems();
-        public Task<IEnumerable<ItemEntity>> GetAllEntities() => Task.FromResult<IEnumerable<ItemEntity>>(this.MockedItemList);
+        private readonly List<StockEntity> MockedItemList = GenerateMockedItems();
+        public Task<IEnumerable<StockEntity>> GetAllEntities() => Task.FromResult<IEnumerable<StockEntity>>(this.MockedItemList);
 
-        public Task<ItemEntity?> GetEntityById(Guid id)
+        public Task<StockEntity?> GetEntityById(Guid id)
         {
             return Task.FromResult(MockedItemList.FirstOrDefault(i => i.Id == id));
         }
 
 
-        private static List<ItemEntity> GenerateMockedItems()
+        private static List<StockEntity> GenerateMockedItems()
         {
-            var resultsToReturn = new List<ItemEntity>();
+            var resultsToReturn = new List<StockEntity>();
             Random rdm = new Random();
 
             foreach (var item in MockedCompanyList)
             {
                 var randomNumber = rdm.Next(100);
                 var randomDay = TimeSpan.FromDays(randomNumber);
-                resultsToReturn.Add(new ItemEntity()
+                resultsToReturn.Add(new StockEntity()
                 {
                     Name = item,
                     Id  = Guid.NewGuid(),
