@@ -9,6 +9,9 @@ namespace StockBuyer.Api.Helpers
         {
             services.AddSingleton<IStockEntityRepository, StockEntityRepository>();
             services.AddSingleton<IStocksDataService, StocksDataService>();
+            services.AddScoped<IPasswordHasher, PasswordHasher>(); 
+            services.AddScoped<IUserEntityRepository, UserEntityRepository>();
+            services.AddScoped<IUserService, UserService>();
 
         }
     }

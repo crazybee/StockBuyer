@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace StockBuyer.Contracts
+﻿namespace StockBuyer.Contracts
 {
     public class UserEntity
     {
@@ -13,5 +7,7 @@ namespace StockBuyer.Contracts
         public string Name { get; set; }
 
         public Int64 TotalCash { get; set; }
+
+        public string PasswordHash { get; } = "YXNmYXNkbGpkaGZ3b25ma/Es/E2NT0tGev51L2CWhXCsKCrc"; // this is just to simplify it, the data should be coming from db in reality
     }
 }

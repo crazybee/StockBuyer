@@ -1,4 +1,5 @@
-﻿using StockBuyer.Data.Models;
+﻿using StockBuyer.Contracts.DTOs;
+using StockBuyer.Data.Models;
 using StockBuyer.Data.Repositories;
 using System;
 using System.Collections.Generic;
@@ -27,14 +28,29 @@ namespace StockBuyer.Data.Services
             return Task.FromResult(false);
         }
 
-        public Task<IEnumerable<StockItem>> GetAllStocks()
+        public async Task<IEnumerable<StockDto>> GetAllStocks()
         {
-            throw new NotImplementedException();
+            var stocksToReturn = new List<StockDto>();
+            var stocks = await this._stockEntityRepository.GetAllEntities();
+            if (stocks.Any())
+            {
+                foreach (var stock in stocks)
+                {
+                    stocksToReturn.Add(new StockDto() 
+                    {
+                        StockId = stock.Id,
+                        StockName = stock.Name,
+                        StockDescription = stock.Description
+                    });
+                }
+            }
+            return stocksToReturn;
         }
 
-        public Task<StockItem> GetStockById(Guid Id)
+        public async Task<StockDto?> GetStockById(Guid Id)
         {
-            throw new NotImplementedException();
+            var stocks = await this.GetAllStocks();
+            return stocks.FirstOrDefault(s => s.StockId == Id);
         }
 
         public Task<bool> SellStockById(Guid Id)
