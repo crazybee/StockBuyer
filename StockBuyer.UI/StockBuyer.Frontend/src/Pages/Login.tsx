@@ -1,16 +1,25 @@
 import { Alert } from "solid-bootstrap";
-import { Component, Show, createSignal } from "solid-js";
+import {
+  Component,
+  Show,
+  createSignal,
+  createMemo,
+  createEffect,
+} from "solid-js";
 import * as zod from "zod";
-import { AuthenticationRequest } from "../apiclient/stockapiclient";
 import { mockedApiClient, api } from "../App";
-interface LoginRequest {
-  username: string;
-  password: string;
-}
+
 import "../assets/Login.css";
 import { createStore } from "solid-js/store";
+import Home from "../Components/Home";
+import { rowClick, setRowClick } from "../Components/simpleTable";
+import Details from "./Details";
+import { Dynamic } from "solid-js/web";
 
-const [loggedinUser, setLoggedinUser] = createSignal<string>("");
+const [loggedinUser, setLoggedinUser] = createStore({
+  username: "",
+  token: "",
+});
 const [token, settoken] = createSignal<string>("");
 const usernameSchema = zod
   .string({
@@ -25,17 +34,18 @@ const passwordSchema = zod
   })
   .max(20, { message: "Must be 20 or fewer characters" });
 const [errorMsg, setErrorMsg] = createSignal<string>("");
+const [selectedStock, setSelectedStock] = createSignal<api.StockDto>();
 const Login: Component = () => {
-  const [fields, setFields] = createStore({"password":"", "username":""});
-  const actionHandler = async () => {
-    console.warn(fields);
-    try {    
+  const [fields, setFields] = createStore({ password: "", username: "" });
+
+  const loginActionHandler = async () => {
+    try {
       usernameSchema.parse(fields.username);
       passwordSchema.parse(fields.password);
     } catch (e) {
       if (e instanceof zod.ZodError) {
         /* set zod errors messages*/
-        setErrorMsg(e.message);
+        setErrorMsg(e.errors[0].message);
         return;
       }
     }
@@ -47,51 +57,71 @@ const Login: Component = () => {
     let response: api.AuthenticationResponse =
       await mockedApiClient.authenticate(authRequest);
     if (response.token) {
-      console.warn(response.token);
-      if (response.token) {
-        setLoggedinUser(fields.username);
-        settoken(response.token);
-         window.location.href = "/home"
-      }
-      else return;
+      setLoggedinUser("username", fields.username);
+      setLoggedinUser("token", response.token);
+    } else {
+      return;
     }
   };
+
+  createEffect(() => {
+    try {
+      usernameSchema.parse(fields.username);
+      passwordSchema.parse(fields.password);
+    } catch (e) {
+      if (e instanceof zod.ZodError) {
+        setErrorMsg(e.errors[0].message);
+      }
+    }
+  });
+  createMemo(async () => {
+    if (rowClick() !== undefined) {
+      let stockName: string = rowClick()?.stockName || "";
+      let stockInfo: api.StockDto = await mockedApiClient.getStockByName(
+        stockName
+      );
+      setSelectedStock(stockInfo);
+      setRowClick();
+    }
+  });
+
   return (
     <div>
-      <h2>Login</h2>
-      <input
-        type="text"
-        placeholder="username"
-        onInput={(e) => {
-          setFields("username", e.currentTarget.value)
-        }}
-        required
-      />
-      <input
-        type="password"
-        placeholder="password"
-        minlength="6"
-        onInput={(e) => {
-          console.warn(e.currentTarget.value);
-          setFields("password", e.currentTarget.value );
-        }}
-        required
-      />
-      <Show when={errorMsg() !== ""}>
-        <Alert variant="warning">{errorMsg()}</Alert>
-      </Show>     
-      <button
-        onClick={[
-          actionHandler,
-          {},
-        ]}
-      >
-        LogIn
-      </button>
+      <Show when={loggedinUser.username == ""}>
+        <h2>Login</h2>
+        <input
+          type="text"
+          placeholder="username"
+          onInput={(e) => {
+            setErrorMsg("");
+            setFields("username", e.currentTarget.value);
+          }}
+          required
+        />
+        <input
+          type="password"
+          placeholder="password"
+          minlength="6"
+          onInput={(e) => {
+            setErrorMsg("");
+            setFields("password", e.currentTarget.value);
+          }}
+          required
+        />
+        <Show when={errorMsg() !== ""}>
+          <Alert variant="warning">{errorMsg()}</Alert>
+        </Show>
+        <button onClick={[loginActionHandler, {}]}>LogIn</button>
+      </Show>
+      <Show when={loggedinUser.username !== "" && loggedinUser.token !== ""}>
+        <Home user={loggedinUser.username} />
+      </Show>
+      <Show when={selectedStock()}>
+        <Dynamic component={Details}></Dynamic>
+      </Show>
     </div>
   );
 };
 
-export { token, loggedinUser };
+export { token, loggedinUser, selectedStock };
 export default Login;
-

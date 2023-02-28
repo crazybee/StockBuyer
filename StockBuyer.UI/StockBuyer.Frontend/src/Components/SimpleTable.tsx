@@ -9,8 +9,9 @@ import { api } from "../App";
 
 export interface TableRow {
   stockName: string;
-  price: number;
-  description: string;
+  price?: number;
+  stockDescription: string;
+  stockId: string;
 }
 export interface ColumnItem {
   name: string;
@@ -37,8 +38,9 @@ function convertToInternalRows(data: api.StockDto[]): TableRow[] {
     data.map((r) => {
       rowItems.push({
         stockName: r.stockName || "",
-        description: r.stockDescription || "",
-        price: 33,
+        stockDescription: r.stockDescription || "",
+        price: r.price,
+        stockId: r.stockId || "",
       });
     });
   }
@@ -53,11 +55,19 @@ const SimpleTable: Component<Props> = ({ columns, data }) => {
   let initialData: TableRow[] = convertToInternalRows(data);
   let initialColumns: ColumnDef<TableRow>[] = [];
   columns.forEach((columnitem) => {
+    console.log("accessKey" + columnitem.name);
     initialColumns.push({
       accessorKey: columnitem.name,
       id: columnitem.name,
       enableGlobalFilter: true,
-      header: () => <span>{columnitem.name}</span>,
+      header: () => (
+        <span>
+          {columnitem.name
+            ? columnitem.name.charAt(0).toUpperCase() +
+              columnitem.name.substr(1).toLowerCase()
+            : ""}
+        </span>
+      ),
       cell: (info) => (
         <div>
           {columnitem.isHyperlink ? (
@@ -77,6 +87,7 @@ const SimpleTable: Component<Props> = ({ columns, data }) => {
   });
   setInternaldata(initialData);
   setInternalColumnData(initialColumns);
+
   const table = createSolidTable({
     get data() {
       return internaldata();
