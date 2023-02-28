@@ -1,5 +1,5 @@
 import { Alert } from "solid-bootstrap";
-import { Component, createSignal } from "solid-js";
+import { Component, Show, createSignal } from "solid-js";
 import * as zod from "zod";
 import { AuthenticationRequest } from "../apiclient/stockapiclient";
 import { mockedApiClient, api } from "../App";
@@ -8,10 +8,10 @@ interface LoginRequest {
   password: string;
 }
 import "../assets/Login.css";
+import { createStore } from "solid-js/store";
 
+const [loggedinUser, setLoggedinUser] = createSignal<string>("");
 const [token, settoken] = createSignal<string>("");
-const [username, setUsername] = createSignal<string>("");
-const [password, setPassword] = createSignal<string>("");
 const usernameSchema = zod
   .string({
     required_error: "Name is required",
@@ -26,29 +26,34 @@ const passwordSchema = zod
   .max(20, { message: "Must be 20 or fewer characters" });
 const [errorMsg, setErrorMsg] = createSignal<string>("");
 const Login: Component = () => {
-  const actionHandler = async (login: LoginRequest) => {
-    console.warn(login);
-    try {
-      usernameSchema.parse(login.username);
-      passwordSchema.parse(login.password);
+  const [fields, setFields] = createStore({"password":"", "username":""});
+  const actionHandler = async () => {
+    console.warn(fields);
+    try {    
+      usernameSchema.parse(fields.username);
+      passwordSchema.parse(fields.password);
     } catch (e) {
       if (e instanceof zod.ZodError) {
-        /* map zod errors to the appropriate form fields */
+        /* set zod errors messages*/
         setErrorMsg(e.message);
         return;
       }
     }
-    console.warn("username" + login.username);
     let authRequest: api.AuthenticationRequest =
       new api.AuthenticationRequest();
-    authRequest.username = login.username;
-    authRequest.password = login.password;
+    authRequest.username = fields.username;
+    authRequest.password = fields.password;
 
     let response: api.AuthenticationResponse =
       await mockedApiClient.authenticate(authRequest);
     if (response.token) {
       console.warn(response.token);
-      settoken(response.token);
+      if (response.token) {
+        setLoggedinUser(fields.username);
+        settoken(response.token);
+         window.location.href = "/home"
+      }
+      else return;
     }
   };
   return (
@@ -58,24 +63,27 @@ const Login: Component = () => {
         type="text"
         placeholder="username"
         onInput={(e) => {
-          setUsername(e.currentTarget.value);
+          setFields("username", e.currentTarget.value)
         }}
         required
       />
       <input
         type="password"
         placeholder="password"
+        minlength="6"
         onInput={(e) => {
-          setPassword(e.currentTarget.value);
+          console.warn(e.currentTarget.value);
+          setFields("password", e.currentTarget.value );
         }}
         required
       />
-
-      <Alert variant="warning">{errorMsg()}</Alert>
+      <Show when={errorMsg() !== ""}>
+        <Alert variant="warning">{errorMsg()}</Alert>
+      </Show>     
       <button
-        onclick={[
+        onClick={[
           actionHandler,
-          { username: username(), password: password() },
+          {},
         ]}
       >
         LogIn
@@ -84,5 +92,6 @@ const Login: Component = () => {
   );
 };
 
-export { token };
+export { token, loggedinUser };
 export default Login;
+
