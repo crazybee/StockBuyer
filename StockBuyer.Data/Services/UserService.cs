@@ -1,4 +1,5 @@
-﻿using StockBuyer.Data.Helpers;
+﻿using StockBuyer.Contracts.DTOs;
+using StockBuyer.Data.Helpers;
 using StockBuyer.Data.Models;
 using StockBuyer.Data.Repositories;
 
@@ -8,10 +9,12 @@ namespace StockBuyer.Data.Services
     {
         private readonly IUserEntityRepository userRepository;
         private readonly IPasswordHasher passwordHasher;
-        public UserService(IUserEntityRepository userRepository, IPasswordHasher passwordHasher)
+        private MockedUserBank userbank;
+        public UserService(IUserEntityRepository userRepository, IPasswordHasher passwordHasher, MockedUserBank userBank)
         {
             this.userRepository = userRepository;
             this.passwordHasher = passwordHasher;
+            this.userbank = userBank;
         }
 
         public async Task<AuthenticationResponse?> Authenticate(AuthenticationRequest request)
@@ -51,24 +54,12 @@ namespace StockBuyer.Data.Services
             }
         }
 
-        public async Task<User?> GetUserByName(string userName)
+        public async Task<UserDto?> GetUserByName(string userName)
         {
             var foundUser = await userRepository.GetUserByName(userName);
-
-            return foundUser == null ? null : new User() { Name = foundUser.Name, Id = foundUser.Id, TotalMoney = foundUser.TotalCash};
+            double money;
+            return foundUser == null ? null : new UserDto() { Name = foundUser.Name, AvailableMoney = userbank.MoneyDictionary.TryGetValue(userName, out money) ?  money : 0.00};
         }
 
-    
-        public async Task<bool> IsUserValid(string userName, string password)
-        {
-            var foundUser = await this.userRepository.GetUserByName(userName);
-
-            if (foundUser != null)
-            {
-               return foundUser.PasswordHash == this.passwordHasher.Generate(password);
-            }
-
-            return false;
-        }
     }
 }

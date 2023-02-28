@@ -1,22 +1,11 @@
 ﻿using StockBuyer.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+
 
 namespace StockBuyer.Data.Repositories
 {
     public class UserEntityRepository : IUserEntityRepository
     {
-        private static readonly List<string> UserList = new List<string>()
-            {
-                "Liu",
-                "Hakan",
-                "Ahmad",
-                "Laurent"
-            };
+       
 
         private readonly List<UserEntity> MockedUserList = GenerateMockedUsers();
         public Task<IEnumerable<UserEntity>> GetAllUsers() => Task.FromResult<IEnumerable<UserEntity>>(this.MockedUserList);
@@ -36,13 +25,12 @@ namespace StockBuyer.Data.Repositories
             var resultsToReturn = new List<UserEntity>();
             Random rdm = new Random();
 
-            foreach (var user in UserList)
+            foreach (var user in Constants.UserList)
             {
                 resultsToReturn.Add(new UserEntity()
                 {
                     Id = Guid.NewGuid(),
-                    Name = user,
-                    TotalCash = 1000
+                    Name = user
                 });
             }
 

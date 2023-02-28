@@ -10,6 +10,8 @@
         public string StockDescription { get; set;}
 
     
+        public string Details { get; set; }
+
         public double Price { get; set;}
     }
 }

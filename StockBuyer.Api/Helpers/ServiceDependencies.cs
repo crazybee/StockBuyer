@@ -12,6 +12,8 @@ namespace StockBuyer.Api.Helpers
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IStockEntityRepository, StockEntityRepository>();
             services.AddSingleton<IStocksDataService, StocksDataService>();
+            services.AddSingleton<MockedUserBank>();
+            services.AddSingleton<MockedStockMarket>();
         }
     }
 }

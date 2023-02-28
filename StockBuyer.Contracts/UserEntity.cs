@@ -6,8 +6,6 @@
 
         public string Name { get; set; }
 
-        public int TotalCash { get; set; } = 10000;
-
         public string PasswordHash { get; } = "YXNmYXNkbGpkaGZ3b25ma/Es/E2NT0tGev51L2CWhXCsKCrc"; // this is just to simplify it, the data should be coming from db in reality
     }
 }

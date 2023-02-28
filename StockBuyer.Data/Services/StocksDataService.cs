@@ -1,31 +1,51 @@
 ﻿using StockBuyer.Contracts.DTOs;
-using StockBuyer.Data.Models;
 using StockBuyer.Data.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StockBuyer.Data.Services
 {
     public class StocksDataService : IStocksDataService
     {
         private readonly IStockEntityRepository _stockEntityRepository;
-
-        public StocksDataService(IStockEntityRepository stockEntityRepository)
+        private MockedStockMarket stockMarket;
+        private MockedUserBank userbank;
+        public StocksDataService(IStockEntityRepository stockEntityRepository, MockedStockMarket stockMarket, MockedUserBank userbank)
         {
             _stockEntityRepository = stockEntityRepository;
+            this.stockMarket = stockMarket;
+            this.userbank = userbank;
         }
 
-        public Task<bool> BuyStockById(Guid Id)
+        public async Task<string> BuyStockByName(string name, int amount, string userName)
         {
-            var foundStock  = this._stockEntityRepository.GetEntityById(Id);
+            var foundStock  = await this._stockEntityRepository.GetEntityByName(name);
+            var failReason = string.Empty;
             if (foundStock != null)
             {
-                
+                if (foundStock.TotalAmount >= amount)
+                {
+                    var totalMoneyToPay = stockMarket.StockDictionary[name].Price * amount;
+                    if (totalMoneyToPay <= this.userbank.MoneyDictionary[userName])
+                    {
+                        stockMarket.StockDictionary[name].Amount -= amount;
+                        userbank.MoneyDictionary[userName] -= totalMoneyToPay;
+                        return failReason;
+                    }
+                    else
+                    {
+                        failReason = "You don't have enough money";
+                    }
+                }
+                else 
+                {
+                    failReason = $"There is not enough amount to buy for this stock {name}";        
+                }
+               
             }
-            return Task.FromResult(false);
+            else 
+            {
+                failReason = "No stock with this name found";
+            }
+            return failReason;
         }
 
         public async Task<IEnumerable<StockDto>> GetAllStocks()
@@ -41,7 +61,7 @@ namespace StockBuyer.Data.Services
                         StockId = stock.Id,
                         StockName = stock.Name,
                         StockDescription = stock.Description,
-                        Price = stock.CurrentPrice
+                        Price = stockMarket.StockDictionary[stock.Name].Price
                         
                     });
                 }
@@ -49,15 +69,47 @@ namespace StockBuyer.Data.Services
             return stocksToReturn;
         }
 
-        public async Task<StockDto?> GetStockById(Guid Id)
+        public async Task<StockDto> GetStockByName(string name)
         {
-            var stocks = await this.GetAllStocks();
-            return stocks.FirstOrDefault(s => s.StockId == Id);
+            var stockToReturn = new StockDto();
+            var foundStock = await this._stockEntityRepository.GetEntityByName(name);
+            if (foundStock != null)
+            {
+                stockToReturn.StockId = foundStock.Id;
+                stockToReturn.StockName = foundStock.Name;
+                stockToReturn.StockDescription = foundStock.Description;
+                stockToReturn.Price = stockMarket.StockDictionary[foundStock.Name].Price;
+                stockToReturn.Details = foundStock.CompanyDetails;
+            }
+
+            return stockToReturn;
         }
 
-        public Task<bool> SellStockById(Guid Id)
+        public async Task<string> SellStockByName(string name, int amount, string userName)
         {
-            throw new NotImplementedException();
+            var failReason = string.Empty;
+            var foundStock = await this._stockEntityRepository.GetEntityByName(name);
+            if (foundStock != null)
+            {
+                var currentAmount = stockMarket.StockDictionary[name].Amount;
+                var totalMoneyToGet = stockMarket.StockDictionary[name].Price * amount;
+                if (amount + currentAmount <= foundStock.TotalAmount)
+                {
+                    stockMarket.StockDictionary[name].Amount += amount;
+                    userbank.MoneyDictionary[userName] += totalMoneyToGet;
+                    return failReason;
+                }
+                else 
+                {
+                    failReason = "The company doesn't want you do flush their stocks";
+                }
+            }
+            else 
+            {
+                failReason = "Stock Not found";
+            }
+
+            return failReason;
         }
     }
 }

@@ -6,6 +6,6 @@ namespace StockBuyer.Data.Repositories
     {
         Task<IEnumerable<StockEntity>> GetAllEntities();
 
-        Task<StockEntity?> GetEntityById(Guid id);
+        Task<StockEntity?> GetEntityByName(string name);
     }
 }

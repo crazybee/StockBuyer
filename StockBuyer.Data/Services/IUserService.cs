@@ -1,12 +1,11 @@
-﻿using StockBuyer.Data.Models;
+﻿using StockBuyer.Contracts.DTOs;
+using StockBuyer.Data.Models;
 
 namespace StockBuyer.Data.Services
 {
     public interface IUserService
     {
-        Task<User?> GetUserByName(string userName);
-
-        Task<Boolean> IsUserValid(string userName, string userToken);
+        Task<UserDto?> GetUserByName(string userName);
 
         Task<AuthenticationResponse?> Authenticate(AuthenticationRequest request);
     }

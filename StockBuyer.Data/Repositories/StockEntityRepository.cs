@@ -4,20 +4,14 @@ namespace StockBuyer.Data.Repositories
 {
     public class StockEntityRepository : IStockEntityRepository
     {
-        private static readonly List<string> MockedCompanyList = new List<string>()
-            {
-                "Apple",
-                "Microsoft",
-                "Dell",
-                "Amazon"
-            };
+      
 
         private readonly List<StockEntity> MockedItemList = GenerateMockedItems();
         public Task<IEnumerable<StockEntity>> GetAllEntities() => Task.FromResult<IEnumerable<StockEntity>>(this.MockedItemList);
 
-        public Task<StockEntity?> GetEntityById(Guid id)
+        public Task<StockEntity?> GetEntityByName(string name)
         {
-            return Task.FromResult(MockedItemList.FirstOrDefault(i => i.Id == id));
+            return Task.FromResult(MockedItemList.FirstOrDefault(i => i.Name == name));
         }
 
 
@@ -26,18 +20,18 @@ namespace StockBuyer.Data.Repositories
             var resultsToReturn = new List<StockEntity>();
             Random rdm = new Random();
 
-            foreach (var item in MockedCompanyList)
+            foreach (var item in Constants.MockedCompanyList)
             {
                 var randomNumber = rdm.Next(100);
-                var randomDay = TimeSpan.FromDays(randomNumber);
+                var descriptionString = randomNumber %2 == 0 ? "good" : "bad";
                 resultsToReturn.Add(new StockEntity()
                 {
                     Name = item,
-                    Id  = Guid.NewGuid(),
-                    CurrentPrice = rdm.NextDouble()*randomNumber,
-                    Description = item + randomNumber.ToString(),
-                    TotalAmount = randomNumber,
-                    CompanyDetails = $"{item} + is good to buy for {randomDay} days",
+                    Id = Guid.NewGuid(),
+                    CurrentPrice = rdm.NextDouble() * randomNumber,
+                    Description = $"{item} + is a {descriptionString} company",
+                    TotalAmount = 100000,
+                    CompanyDetails = $"{item} + is strong for {randomNumber} days",
                 });
 
             }

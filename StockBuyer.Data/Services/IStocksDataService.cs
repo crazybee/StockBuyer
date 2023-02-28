@@ -12,11 +12,11 @@ namespace StockBuyer.Data.Services
     {
         Task<IEnumerable<StockDto>> GetAllStocks();
 
-        Task<bool> BuyStockById(Guid Id);
+        Task<string> BuyStockByName(string name, int amount, string userName);
 
-        Task<bool> SellStockById(Guid Id);
+        Task<string> SellStockByName(string name, int amount, string userName);
 
-        Task<StockDto> GetStockById(Guid Id);
+        Task<StockDto> GetStockByName(string name);
 
     }
 }
