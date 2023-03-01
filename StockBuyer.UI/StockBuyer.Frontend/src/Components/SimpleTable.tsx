@@ -55,7 +55,6 @@ const SimpleTable: Component<Props> = ({ columns, data }) => {
   let initialData: TableRow[] = convertToInternalRows(data);
   let initialColumns: ColumnDef<TableRow>[] = [];
   columns.forEach((columnitem) => {
-    console.log("accessKey" + columnitem.name);
     initialColumns.push({
       accessorKey: columnitem.name,
       id: columnitem.name,
@@ -64,7 +63,7 @@ const SimpleTable: Component<Props> = ({ columns, data }) => {
         <span>
           {columnitem.name
             ? columnitem.name.charAt(0).toUpperCase() +
-              columnitem.name.substr(1).toLowerCase()
+              columnitem.name.substring(1).toLowerCase()
             : ""}
         </span>
       ),
