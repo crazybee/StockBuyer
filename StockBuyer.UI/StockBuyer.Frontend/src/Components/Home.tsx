@@ -1,11 +1,11 @@
 import { Component, createSignal, lazy, onMount, Show } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { api, mockedApiClient } from "../App";
-import { ColumnItem } from "./simpleTable";
+import { ColumnItem } from "./SimpleTable";
 import { loggedinUser, token } from "../Pages/Login";
 
 import "../assets/Home.css";
-const SimpleTable = lazy(() => import("./simpleTable"));
+const SimpleTable = lazy(() => import("./SimpleTable"));
 const columnNames = ["stockId", "stockName", "stockDescription", "price"];
 interface Props {
   user: string;
@@ -19,7 +19,6 @@ const Home: Component<Props> = ({ user }) => {
     if (mockedItems.length) {
       setTableData(mockedItems);
     }
-    console.log(mockedItems);
     let internalColumns: ColumnItem[] = [];
     columnNames.map((n) => {
       internalColumns.push({
