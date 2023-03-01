@@ -7,7 +7,7 @@ namespace StockBuyer.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
+    [CrazybeeAuthorize]
     public class StocksController : ControllerBase
     {
         private readonly IStocksDataService _stocksDataService;
@@ -18,23 +18,18 @@ namespace StockBuyer.Api.Controllers
             this._stocksDataService = stocksDataService;
         }
 
-        [CrazybeeAuthorize]
         [HttpGet("allstocks")]
         public async Task<ActionResult<IEnumerable<StockDto>>?> GetAllStocks()
         {
-            var user = this.HttpContext.Items["User"] as UserDto;
-            Console.WriteLine(user.Name);
             return this.Ok(await _stocksDataService.GetAllStocks());
         }
 
-        [CrazybeeAuthorize]
         [HttpGet("getStockByName")]
         public async Task<ActionResult<StockDto>?> GetStock(string name)
         {
             return this.Ok(await _stocksDataService.GetStockByName(name));
         }
 
-        [CrazybeeAuthorize]
         [HttpGet("buyStockById")]
         public async Task<ActionResult<StockOperationResponse>> BuyStockById(string name, int amount)
         {
@@ -54,7 +49,6 @@ namespace StockBuyer.Api.Controllers
             return this.NotFound();
         }
 
-        [CrazybeeAuthorize]
         [HttpPost("sellStockByName")]
         public async Task<ActionResult<StockOperationResponse>?> SellStock(string name, int amount)
         {

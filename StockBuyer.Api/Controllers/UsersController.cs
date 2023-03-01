@@ -8,7 +8,7 @@ namespace StockBuyer.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
+    [CrazybeeAuthorize]
     public class UsersController : ControllerBase
     {
         private readonly IUserService userService;
@@ -18,7 +18,6 @@ namespace StockBuyer.Api.Controllers
             this.userService = userService;
         }
 
-        [CrazybeeAuthorize]
         [HttpGet("getUserByName")]
         public async Task<ActionResult<UserDto>> GetUserByName(string name)
         {

@@ -7,6 +7,7 @@ namespace StockBuyer.Data.Services
     {
         private readonly string saltString = "asfasdljdhfwonfkjangjkasnggkhkuyvb#%^#$%t9238759y"; // in production this salt is coming from configuration or keyVault 
 
+
         public string Generate(string password)
         {
             var salt = saltString.ToByteArray();

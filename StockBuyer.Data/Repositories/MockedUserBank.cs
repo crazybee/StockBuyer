@@ -2,7 +2,7 @@
 {
     public class MockedUserBank
     {
-        private readonly Dictionary<string, double> moneyDicionary = new Dictionary<string, double>()
+        private static Dictionary<string, double> moneyDicionary = new()
         {
             { "Liu",  10000.00 },
             { "Hakan",  10000.00 },
@@ -11,6 +11,6 @@
 
         };
 
-        public Dictionary<string, double> MoneyDictionary => moneyDicionary;
+        public Dictionary<string, double> MoneyDictionary { get; set; } = moneyDicionary;
     }
 }

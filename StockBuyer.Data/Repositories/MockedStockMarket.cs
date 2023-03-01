@@ -2,7 +2,7 @@
 {
     public class MockedStockMarket
     {
-        private readonly Dictionary<string, StockStatus> stockDicionary = new Dictionary<string, StockStatus>()
+        private static Dictionary<string, StockStatus> stockDicionary = new()
         {
             { "Apple",  new StockStatus(){Price = 100.78, Amount = 5000 } },
             { "Amazon",  new StockStatus(){Price = 30.67, Amount = 5000 } },
@@ -11,6 +11,6 @@
 
         };
 
-        public Dictionary<string, StockStatus> StockDictionary => stockDicionary;
+        public Dictionary<string, StockStatus> StockDictionary { get; set; } = stockDicionary;
     }
 }
