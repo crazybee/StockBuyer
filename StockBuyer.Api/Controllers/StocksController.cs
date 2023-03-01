@@ -30,8 +30,8 @@ namespace StockBuyer.Api.Controllers
             return this.Ok(await _stocksDataService.GetStockByName(name));
         }
 
-        [HttpGet("buyStockById")]
-        public async Task<ActionResult<StockOperationResponse>> BuyStockById(string name, int amount)
+        [HttpGet("buyStockByName")]
+        public async Task<ActionResult<StockOperationResponse>> BuyStockByName(string name, int amount)
         {
             var user = this.HttpContext.Items["User"] as UserDto;
 

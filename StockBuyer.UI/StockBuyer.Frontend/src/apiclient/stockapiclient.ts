@@ -180,8 +180,8 @@ export class Client extends ClientBase {
      * @param amount (optional) 
      * @return Success
      */
-    buyStockById(name: string | undefined, amount: number | undefined): Promise<StockOperationResponse> {
-        let url_ = this.baseUrl + "/api/Stocks/buyStockById?";
+    buyStockByName(name: string | undefined, amount: number | undefined): Promise<StockOperationResponse> {
+        let url_ = this.baseUrl + "/api/Stocks/buyStockByName?";
         if (name === null)
             throw new Error("The parameter 'name' cannot be null.");
         else if (name !== undefined)
@@ -202,11 +202,11 @@ export class Client extends ClientBase {
         return this.transformOptions(options_).then(transformedOptions_ => {
             return this.http.fetch(url_, transformedOptions_);
         }).then((_response: Response) => {
-            return this.processBuyStockById(_response);
+            return this.processBuyStockByName(_response);
         });
     }
 
-    protected processBuyStockById(response: Response): Promise<StockOperationResponse> {
+    protected processBuyStockByName(response: Response): Promise<StockOperationResponse> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {

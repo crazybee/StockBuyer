@@ -31,11 +31,13 @@ const Details: Component = () => {
       required_error: "Amount is required",
       invalid_type_error: "Amount must be an integer number",
     })
+    .int({ message: "must to be an integer" })
     .max(1000, { message: "single buy cannot exceed 1000" })
     .min(1, { message: "at least by 1 stock" });
   createEffect(() => {
     try {
       stockAmountSchema.parse(buyInAmount());
+      stockAmountSchema.parse(sellOutAmount());
     } catch (error) {
       if (error instanceof zod.ZodError) {
         setError(error.errors[0].message);
@@ -45,7 +47,7 @@ const Details: Component = () => {
   const buyInHandler = async () => {
     mockedApiClient.token = loggedinUser.token;
     let buyResult: api.StockOperationResponse =
-      await mockedApiClient.buyStockById(
+      await mockedApiClient.buyStockByName(
         selectedStock()?.stockName,
         buyInAmount()
       );
