@@ -29,9 +29,9 @@ namespace StockBuyer.Data.Repositories
                     Name = item,
                     Id = Guid.NewGuid(),
                     CurrentPrice = rdm.NextDouble() * randomNumber,
-                    Description = $"{item} + is a {descriptionString} company",
+                    Description = $"{item} is a {descriptionString} company",
                     TotalAmount = 100000,
-                    CompanyDetails = $"{item} + is strong for {randomNumber} days",
+                    CompanyDetails = $"{item} is strong for {randomNumber} days",
                 });
 
             }

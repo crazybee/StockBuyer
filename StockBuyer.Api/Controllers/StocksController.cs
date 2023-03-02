@@ -35,7 +35,7 @@ namespace StockBuyer.Api.Controllers
         {
             var user = this.HttpContext.Items["User"] as UserDto;
 
-            if (user != null)
+            if (user != null && amount >=1)
             {
                 var result = await _stocksDataService.BuyStockByName(name, amount, user.Name);
                 return this.Ok(new StockOperationResponse()
@@ -53,7 +53,7 @@ namespace StockBuyer.Api.Controllers
         public async Task<ActionResult<StockOperationResponse>?> SellStock(string name, int amount)
         {
             var user = this.HttpContext.Items["User"] as UserDto;
-            if (user != null)
+            if (user != null && amount >=1)
             {
                 var result = await _stocksDataService.SellStockByName(name, amount, user.Name);
                 return this.Ok(new StockOperationResponse()
